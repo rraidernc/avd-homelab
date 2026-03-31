@@ -1,0 +1,90 @@
+---
+all:
+  children:
+    FABRIC:
+      children:
+        DC1:
+          children:
+            DC1_SPINES:
+              hosts:
+                dc1-spine1:
+                  ansible_host: 192.168.4.120
+                dc1-spine2:
+                  ansible_host: 192.168.4.121
+            DC1_L3_LEAVES:
+              children:
+                DC1_LEAF1:
+                  hosts:
+                    dc1-leaf1a:
+                      ansible_host: 192.168.4.122
+                    dc1-leaf1b:
+                      ansible_host: 192.168.4.123
+                DC1_LEAF2:
+                  hosts:
+                    dc1-leaf2a:
+                      ansible_host: 192.168.4.126
+                    dc1-leaf2b:
+                      ansible_host: 192.168.4.127
+            DC1_L2_LEAVES:
+              children:
+                DC1_L2_LEAF1:
+                  hosts:
+                    dc1-leaf1c:
+                      ansible_host: 192.168.4.124
+                DC1_L2_LEAF2:
+                  hosts:
+                    dc1-leaf2c:
+                      ansible_host: 192.168.4.128
+        DC2:
+          children:
+            DC2_SPINES:
+              hosts:
+                dc2-spine1:
+                  ansible_host: 192.168.4.130
+                dc2-spine2:
+                  ansible_host: 192.168.4.131
+            DC2_L3_LEAVES:
+              children:
+                DC2_LEAF1:
+                  hosts:
+                    dc2-leaf1a:
+                      ansible_host: 192.168.4.132
+                    dc2-leaf1b:
+                      ansible_host: 192.168.4.133
+                DC2_LEAF2:
+                  hosts:
+                    dc2-leaf2a:
+                      ansible_host: 192.168.4.136
+                    dc2-leaf2b:
+                      ansible_host: 192.168.4.137
+            DC2_L2_LEAVES:
+              children:
+                DC2_L2_LEAF1:
+                  hosts:
+                    dc2-leaf1c:
+                      ansible_host: 192.168.4.134
+                DC2_L2_LEAF2:
+                  hosts:
+                    dc2-leaf2c:
+                      ansible_host: 192.168.4.138
+
+    NETWORK_SERVICES:
+      children:
+        DC1_L3_LEAVES:
+        DC1_L2_LEAVES:
+        DC2_L3_LEAVES:
+        DC2_L2_LEAVES:
+
+    CONNECTED_ENDPOINTS:
+      children:
+        DC1_L3_LEAVES:
+        DC1_L2_LEAVES:
+        DC2_L3_LEAVES:
+        DC2_L2_LEAVES:
+
+    CVP:
+      hosts:
+        mills-cvp:
+          ansible_host: 192.168.4.165
+          ansible_user: cvpadmin
+          ansible_password: cetest.123

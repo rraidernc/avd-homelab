@@ -1,0 +1,5 @@
+---
+# Default gateway used for the management interface
+mgmt_gateway: 192.168.4.1
+management_eapi:
+  enabled: true
