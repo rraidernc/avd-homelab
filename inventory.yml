@@ -82,6 +82,17 @@ all:
         DC2_L3_LEAVES:
         DC2_L2_LEAVES:
 
+    SERVERS:
+      hosts:
+        dc1-leaf1-server1:
+          ansible_host: 192.168.4.125
+        dc1-leaf2-server1:
+          ansible_host: 192.168.4.129
+        dc2-leaf1-server1:
+          ansible_host: 192.168.4.135
+        dc2-leaf2-server1:
+          ansible_host: 192.168.4.139
+
     CVP:
       hosts:
         mills-cvp:

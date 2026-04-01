@@ -1,0 +1,38 @@
+---
+# Playbook to push configurations to vEOS server devices
+# Run with: ansible-playbook push-server-configs.yml
+
+- name: Push configurations to vEOS servers
+  hosts: SERVERS
+  gather_facts: false
+  connection: ansible.netcommon.httpapi
+
+  vars:
+    ansible_network_os: arista.eos.eos
+    ansible_user: cvpadmin
+    ansible_password: cetest.123
+    ansible_become: true
+    ansible_become_method: enable
+    ansible_httpapi_use_ssl: true
+    ansible_httpapi_validate_certs: false
+
+  tasks:
+    - name: Push server configuration
+      arista.eos.eos_config:
+        src: "{{ playbook_dir }}/server-configurations/{{ inventory_hostname }}.txt"
+        replace: config
+
+    - name: Save configuration to flash
+      arista.eos.eos_command:
+        commands:
+          - write memory
+
+    - name: Confirm hostname
+      arista.eos.eos_command:
+        commands:
+          - show hostname
+      register: hostname_output
+
+    - name: Display hostname
+      debug:
+        msg: "{{ inventory_hostname }} - {{ hostname_output.stdout[0] }}"
