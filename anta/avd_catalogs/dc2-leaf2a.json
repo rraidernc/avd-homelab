@@ -7,7 +7,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -19,7 +19,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -33,39 +33,39 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         },
         "neighbors": [
           {
             "port": "Ethernet1",
-            "neighbor_device": "dc1-spine1",
-            "neighbor_port": "Ethernet4"
+            "neighbor_device": "dc2-spine1",
+            "neighbor_port": "Ethernet3"
           },
           {
             "port": "Ethernet2",
-            "neighbor_device": "dc1-spine2",
-            "neighbor_port": "Ethernet4"
+            "neighbor_device": "dc2-spine2",
+            "neighbor_port": "Ethernet3"
           },
           {
             "port": "Ethernet3",
-            "neighbor_device": "dc1-leaf2a",
+            "neighbor_device": "dc2-leaf2b",
             "neighbor_port": "Ethernet3"
           },
           {
             "port": "Ethernet4",
-            "neighbor_device": "dc1-leaf2a",
+            "neighbor_device": "dc2-leaf2b",
             "neighbor_port": "Ethernet4"
           },
           {
             "port": "Ethernet6",
-            "neighbor_device": "dc2-leaf2b",
+            "neighbor_device": "dc1-leaf2a",
             "neighbor_port": "Ethernet6"
           },
           {
             "port": "Ethernet8",
-            "neighbor_device": "dc1-leaf2c",
-            "neighbor_port": "Ethernet2"
+            "neighbor_device": "dc2-leaf2c",
+            "neighbor_port": "Ethernet1"
           }
         ]
       }
@@ -78,25 +78,25 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         },
         "hosts": [
           {
-            "destination": "10.255.255.12",
-            "source": "10.255.255.13",
+            "destination": "10.255.255.72",
+            "source": "10.255.255.73",
             "vrf": "default",
             "repeat": 1
           },
           {
-            "destination": "10.255.255.14",
-            "source": "10.255.255.15",
+            "destination": "10.255.255.74",
+            "source": "10.255.255.75",
             "vrf": "default",
             "repeat": 1
           },
           {
-            "destination": "172.100.100.3",
-            "source": "172.100.100.2",
+            "destination": "172.100.100.0",
+            "source": "172.100.100.1",
             "vrf": "default",
             "repeat": 1
           }
@@ -111,24 +111,24 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         },
         "hosts": [
           {
-            "destination": "10.255.0.1",
+            "destination": "10.255.0.5",
             "source": "Loopback0",
             "vrf": "default",
             "repeat": 1
           },
           {
-            "destination": "10.255.0.2",
+            "destination": "10.255.128.11",
             "source": "Loopback0",
             "vrf": "default",
             "repeat": 1
           },
           {
-            "destination": "10.255.128.6",
+            "destination": "10.255.128.12",
             "source": "Loopback0",
             "vrf": "default",
             "repeat": 1
@@ -145,7 +145,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         },
         "states": [
@@ -160,7 +160,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         },
         "states": [
@@ -175,7 +175,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -187,7 +187,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -199,7 +199,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -213,7 +213,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -225,7 +225,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -237,7 +237,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -249,7 +249,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -261,7 +261,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -273,7 +273,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         },
         "interfaces": [
@@ -379,7 +379,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -391,7 +391,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -405,7 +405,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -419,7 +419,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -431,7 +431,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -443,7 +443,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -457,36 +457,36 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         },
         "bgp_peers": [
           {
-            "peer_address": "10.255.0.1",
+            "peer_address": "10.255.0.5",
             "vrf": "default"
           },
           {
-            "peer_address": "10.255.0.2",
+            "peer_address": "10.255.128.11",
             "vrf": "default"
           },
           {
-            "peer_address": "10.255.1.100",
+            "peer_address": "10.255.128.12",
             "vrf": "default"
           },
           {
-            "peer_address": "10.255.128.6",
+            "peer_address": "10.255.129.101",
             "vrf": "default"
           },
           {
-            "peer_address": "10.255.255.12",
+            "peer_address": "10.255.255.72",
             "vrf": "default"
           },
           {
-            "peer_address": "10.255.255.14",
+            "peer_address": "10.255.255.74",
             "vrf": "default"
           },
           {
-            "peer_address": "172.100.100.3",
+            "peer_address": "172.100.100.0",
             "vrf": "default"
           }
         ]
@@ -501,7 +501,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         },
         "model": "multi-agent"
@@ -516,7 +516,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -530,7 +530,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -542,7 +542,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -554,7 +554,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -566,7 +566,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -578,7 +578,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -590,7 +590,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
@@ -602,7 +602,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         },
         "allowed_causes": [
@@ -621,7 +621,7 @@
         },
         "filters": {
           "tags": [
-            "dc1-leaf2b"
+            "dc2-leaf2a"
           ]
         }
       }
