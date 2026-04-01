@@ -1,0 +1,93 @@
+! Command: show running-config
+! device: dc1-leaf1-server1 (vEOS-lab, EOS-4.33.0F)
+!
+! boot system flash:/vEOS-lab.swi
+!
+no aaa root
+!
+username admin privilege 15 role network-admin secret sha512 $6$6g91UXvsnA0QPRSF$CFx..o3ctZIvlf2JA8qLvKVV0Wnazn4Z8vMxFy8OlEvhsvBmxkWSZZbBCcTNBlwYGFHvhd0uq9ZXKOxFWZjN..
+username cvpadmin privilege 15 role network-admin secret sha512 $6$.emQspWyiUUgrlIY$KpvdNGURblPnH0XIXDYrUWCwTL5xcoV5ucHJPjcLEt7cqgK3/brUyVRv9uAXQyl/.ZupfvEjNQxbL1G1UiaVf.
+!
+management api http-commands
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+daemon TerminAttr
+   exec /usr/bin/TerminAttr -smashexcludes=ale,flexCounter,hardware,kni,pulse,strata -cvaddr=192.168.4.165:9910 -cvauth=token,/tmp/token -cvvrf=MGMT -taillogs
+   no shutdown
+!
+no service interface inactive port-id allocation disabled
+!
+transceiver qsfp default-mode 4x10G
+!
+service routing protocols model multi-agent
+!
+hostname dc1-leaf1-server1
+!
+spanning-tree mode mstp
+!
+system l1
+   unsupported speed action error
+   unsupported error-correction action error
+!
+vlan 11
+   name VRF10_VLAN11
+!
+vlan 21
+   name VRF11_VLAN21
+!
+vrf instance MGMT
+!
+interface Port-Channel1
+   description BOND_dc1-leaf1_Port-Channel5
+   switchport trunk allowed vlan 11
+   switchport mode trunk
+!
+interface Ethernet1
+   description BOND_dc1-leaf1a_Ethernet5
+   channel-group 1 mode active
+!
+interface Ethernet2
+   description BOND_dc1-leaf1b_Ethernet5
+   channel-group 1 mode active
+!
+interface Ethernet3
+!
+interface Ethernet4
+!
+interface Ethernet5
+!
+interface Ethernet6
+!
+interface Ethernet7
+!
+interface Ethernet8
+!
+interface Management1
+   description OOB_MANAGEMENT
+   vrf MGMT
+   ip address 192.168.4.125/22
+!
+interface Vlan11
+   description VRF10_VLAN11
+   ip address 10.10.11.10/24
+!
+ip routing
+no ip routing vrf MGMT
+!
+ip route 0.0.0.0/0 10.10.11.1
+ip route vrf MGMT 0.0.0.0/0 192.168.4.1
+!
+ntp local-interface vrf MGMT Management1
+ntp server vrf MGMT 192.168.4.250 prefer
+!
+router multicast
+   ipv4
+      software-forwarding kernel
+   !
+   ipv6
+      software-forwarding kernel
+!
+end
