@@ -1,0 +1,103 @@
+---
+# Post Change Control Validation Playbook
+# Run after a CVP Change Control to verify network compliance state
+# Usage: ansible-playbook post-change-validation.yml
+
+- name: Post Change Control - Configuration Compliance Check
+  hosts: FABRIC
+  gather_facts: false
+  connection: ansible.netcommon.httpapi
+
+  vars:
+    ansible_network_os: arista.eos.eos
+    ansible_user: cvpadmin
+    ansible_password: cetest.123
+    ansible_become: true
+    ansible_become_method: enable
+    ansible_httpapi_use_ssl: true
+    ansible_httpapi_validate_certs: false
+
+  tasks:
+
+    - name: Get running config diff (running vs startup)
+      arista.eos.eos_command:
+        commands:
+          - show running-config diffs
+      register: config_diff
+
+    - name: Get configuration checksum
+      arista.eos.eos_command:
+        commands:
+          - show running-config checksum
+      register: running_checksum
+
+    - name: Get startup config checksum
+      arista.eos.eos_command:
+        commands:
+          - show startup-config checksum
+      register: startup_checksum
+
+    - name: Set compliance fact
+      set_fact:
+        is_compliant: "{{ running_checksum.stdout[0] == startup_checksum.stdout[0] }}"
+        has_diff: "{{ config_diff.stdout[0] | length > 0 }}"
+
+    - name: Display per-device compliance detail
+      debug:
+        msg: >
+          {{ inventory_hostname }} |
+          Status: {{ 'COMPLIANT ✅' if is_compliant else 'NON-COMPLIANT ❌' }} |
+          Running checksum: {{ running_checksum.stdout[0] }} |
+          Startup checksum: {{ startup_checksum.stdout[0] }}
+
+    - name: Display config diff if non-compliant
+      debug:
+        msg: |
+          {{ inventory_hostname }} - Configuration Diff:
+          {{ config_diff.stdout[0] }}
+      when: has_diff
+
+    - name: Flag non-compliant devices
+      set_fact:
+        compliance_status: "{{ inventory_hostname }} - NON-COMPLIANT"
+      when: not is_compliant
+
+- name: Compliance Summary
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+
+    - name: Display summary header
+      debug:
+        msg: |
+          ============================================
+          POST CHANGE CONTROL - COMPLIANCE SUMMARY
+          ============================================
+          Timestamp: {{ ansible_date_time.iso8601 | default(lookup('pipe', 'date')) }}
+
+    - name: Collect compliance results
+      debug:
+        msg: >
+          {{ item }} |
+          Compliant: {{ hostvars[item]['is_compliant'] | default('unknown') }}
+      loop: "{{ groups['FABRIC'] }}"
+
+    - name: Check for any non-compliant devices
+      set_fact:
+        non_compliant_devices: >
+          {{ groups['FABRIC'] | 
+             select('defined') | 
+             map('extract', hostvars) | 
+             selectattr('is_compliant', 'defined') |
+             selectattr('is_compliant', 'equalto', false) |
+             map(attribute='inventory_hostname') | 
+             list }}
+
+    - name: Display final compliance result
+      debug:
+        msg: |
+          ============================================
+          RESULT: {{ 'ALL DEVICES COMPLIANT ✅' if non_compliant_devices | length == 0 else 'NON-COMPLIANT DEVICES DETECTED ❌' }}
+          Non-compliant devices: {{ non_compliant_devices | default([]) }}
+          ============================================

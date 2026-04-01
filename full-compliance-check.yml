@@ -1,0 +1,143 @@
+---
+# Full Compliance Check Playbook
+# Runs a complete end-to-end compliance verification:
+#   1. Regenerates intended configs from group_vars (source of truth)
+#   2. Checks CVP compliance (intended vs running)
+#   3. Runs ANTA fabric validation
+#
+# Usage: ansible-playbook full-compliance-check.yml
+# A new Change Control in CVP after step 2 means drift was detected.
+# No Change Control = fully compliant with repo.
+
+# ============================================================
+# STEP 1 - Regenerate intended configs from AVD source of truth
+# ============================================================
+- name: "STEP 1 - Regenerate intended configs from AVD group_vars"
+  hosts: FABRIC
+  gather_facts: false
+
+  tasks:
+
+    - name: Print step header
+      run_once: true
+      debug:
+        msg: |
+          ============================================
+          STEP 1 - BUILDING INTENDED CONFIGS FROM REPO
+          ============================================
+
+    - name: Generate AVD structured configs and documentation
+      run_once: true
+      ansible.builtin.import_role:
+        name: arista.avd.eos_designs
+      delegate_to: localhost
+
+    - name: Generate EOS CLI configs from structured configs
+      run_once: true
+      ansible.builtin.import_role:
+        name: arista.avd.eos_cli_config_gen
+      delegate_to: localhost
+
+    - name: Print step result
+      run_once: true
+      debug:
+        msg: "✅ STEP 1 COMPLETE - Intended configs regenerated from group_vars"
+
+# ============================================================
+# STEP 2 - Deploy to CVP (no Change Control = compliant)
+# ============================================================
+- name: "STEP 2 - Check CVP compliance (deploy intended configs)"
+  hosts: FABRIC
+  gather_facts: false
+
+  tasks:
+
+    - name: Print step header
+      run_once: true
+      debug:
+        msg: |
+          ============================================
+          STEP 2 - CHECKING CVP COMPLIANCE
+          If a Change Control is created, drift was detected.
+          No Change Control = fully compliant with repo.
+          ============================================
+
+    - name: Deploy configs to CVP and check compliance
+      run_once: true
+      ansible.builtin.import_role:
+        name: arista.avd.cv_deploy
+      vars:
+        cv_server: 192.168.4.165
+        cv_token: "{{ lookup('file', '~/.cvp_token') }}"
+        cv_verify_certs: false
+      delegate_to: localhost
+
+    - name: Print step result
+      run_once: true
+      debug:
+        msg: "✅ STEP 2 COMPLETE - CVP compliance check done. Check CVP for any new Change Controls."
+
+# ============================================================
+# STEP 3 - ANTA fabric validation
+# ============================================================
+- name: "STEP 3 - ANTA Fabric Validation"
+  hosts: FABRIC
+  gather_facts: false
+  connection: ansible.netcommon.httpapi
+
+  vars:
+    ansible_network_os: arista.eos.eos
+    ansible_user: cvpadmin
+    ansible_password: cetest.123
+    ansible_become: true
+    ansible_become_method: enable
+    ansible_httpapi_use_ssl: true
+    ansible_httpapi_validate_certs: false
+
+  tasks:
+
+    - name: Print step header
+      run_once: true
+      debug:
+        msg: |
+          ============================================
+          STEP 3 - RUNNING ANTA FABRIC VALIDATION
+          ============================================
+
+    - name: Run ANTA validation
+      ansible.builtin.import_role:
+        name: arista.avd.anta_runner
+
+    - name: Print step result
+      run_once: true
+      debug:
+        msg: |
+          ✅ STEP 3 COMPLETE - ANTA validation done.
+          Check anta/reports/ for full results.
+
+# ============================================================
+# FINAL SUMMARY
+# ============================================================
+- name: "FINAL - Compliance Summary"
+  hosts: localhost
+  gather_facts: true
+
+  tasks:
+
+    - name: Print final summary
+      debug:
+        msg: |
+          ============================================
+          FULL COMPLIANCE CHECK COMPLETE
+          Timestamp: {{ ansible_date_time.iso8601 }}
+          ============================================
+          STEP 1 - AVD Build:         ✅ Complete
+          STEP 2 - CVP Compliance:    ✅ Complete - Check CVP for Change Controls
+          STEP 3 - ANTA Validation:   ✅ Complete - Check anta/reports/ for results
+          ============================================
+          NEXT STEPS:
+          - If CVP created a Change Control in Step 2:
+            Review, approve and execute it to remediate drift
+          - Check anta/reports/ for any ANTA test failures
+          - Run validate.yml standalone for just ANTA checks
+          ============================================
