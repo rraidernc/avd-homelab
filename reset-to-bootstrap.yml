@@ -1,0 +1,132 @@
+---
+# Reset Fabric to Bootstrap Configuration
+# ⚠️  WARNING: This playbook wipes all AVD-deployed configuration!
+# ⚠️  Devices will lose all BGP, EVPN, VXLAN, and MLAG config.
+# ⚠️  Only management access will be preserved.
+# ⚠️  Run deploy-cvp.yml after this to restore the full fabric.
+#
+# Usage: ansible-playbook reset-to-bootstrap.yml
+# Confirm prompt will appear before any changes are made.
+
+- name: "⚠️  WARNING - Reset Fabric to Bootstrap Configuration"
+  hosts: localhost
+  gather_facts: false
+
+  tasks:
+    - name: Confirm reset
+      pause:
+        prompt: |
+          ============================================
+          ⚠️  WARNING - FABRIC RESET TO BOOTSTRAP
+          ============================================
+          This will wipe ALL configuration from 16 switches
+          and return them to basic bootstrap state.
+
+          All of the following will be removed:
+            - BGP sessions (underlay + overlay)
+            - EVPN/VXLAN configuration
+            - MLAG configuration
+            - VLANs, VRFs, SVIs
+            - DCI links
+
+          Only management access will be preserved.
+
+          Type 'yes' to continue or Ctrl+C to abort
+      register: confirm
+
+    - name: Abort if not confirmed
+      fail:
+        msg: "Reset aborted by user."
+      when: confirm.user_input != "yes"
+
+- name: Reset DC1 switches to bootstrap configuration
+  hosts: DC1
+  gather_facts: false
+  connection: ansible.netcommon.httpapi
+  serial: 1
+
+  vars:
+    ansible_network_os: arista.eos.eos
+    ansible_user: cvpadmin
+    ansible_password: cetest.123
+    ansible_become: true
+    ansible_become_method: enable
+    ansible_httpapi_use_ssl: true
+    ansible_httpapi_validate_certs: false
+
+  tasks:
+    - name: Push DC1 bootstrap configuration
+      arista.eos.eos_config:
+        src: "{{ playbook_dir }}/switch-basic-configurations/{{ inventory_hostname }}-basic-configuration.txt"
+        replace: config
+
+    - name: Save configuration to flash
+      arista.eos.eos_command:
+        commands:
+          - write memory
+
+    - name: Confirm hostname
+      arista.eos.eos_command:
+        commands:
+          - show hostname
+      register: hostname_output
+
+    - name: Display result
+      debug:
+        msg: "✅ {{ inventory_hostname }} reset to bootstrap - {{ hostname_output.stdout[0] }}"
+
+- name: Reset DC2 switches to bootstrap configuration
+  hosts: DC2
+  gather_facts: false
+  connection: ansible.netcommon.httpapi
+  serial: 1
+
+  vars:
+    ansible_network_os: arista.eos.eos
+    ansible_user: cvpadmin
+    ansible_password: cetest.123
+    ansible_become: true
+    ansible_become_method: enable
+    ansible_httpapi_use_ssl: true
+    ansible_httpapi_validate_certs: false
+
+  tasks:
+    - name: Push DC2 bootstrap configuration
+      arista.eos.eos_config:
+        src: "{{ playbook_dir }}/switch-basic-configurations/{{ inventory_hostname }}-basic-configuration.txt"
+        replace: config
+
+    - name: Save configuration to flash
+      arista.eos.eos_command:
+        commands:
+          - write memory
+
+    - name: Confirm hostname
+      arista.eos.eos_command:
+        commands:
+          - show hostname
+      register: hostname_output
+
+    - name: Display result
+      debug:
+        msg: "✅ {{ inventory_hostname }} reset to bootstrap - {{ hostname_output.stdout[0] }}"
+
+- name: Reset Summary
+  hosts: localhost
+  gather_facts: true
+
+  tasks:
+    - name: Display reset summary
+      debug:
+        msg: |
+          ============================================
+          FABRIC RESET COMPLETE
+          Timestamp: {{ ansible_date_time.iso8601 }}
+          ============================================
+          All 16 switches returned to bootstrap state.
+
+          To restore the full fabric run:
+            ansible-playbook deploy-cvp.yml
+
+          Then approve the Change Control in CVP.
+          ============================================
