@@ -20,7 +20,7 @@
           ⚠️  WARNING - FABRIC RESET TO BOOTSTRAP
           ============================================
           This will wipe ALL configuration from 16 switches
-          and return them to basic bootstrap state.
+          and 4 servers and return them to basic bootstrap state.
 
           All of the following will be removed:
             - BGP sessions (underlay + overlay)
@@ -28,6 +28,7 @@
             - MLAG configuration
             - VLANs, VRFs, SVIs
             - DCI links
+            - Server port-channels and data interfaces
 
           Only management access will be preserved.
 
@@ -111,6 +112,42 @@
       debug:
         msg: "✅ {{ inventory_hostname }} reset to bootstrap - {{ hostname_output.stdout[0] }}"
 
+- name: Reset servers to bootstrap configuration
+  hosts: SERVERS
+  gather_facts: false
+  connection: ansible.netcommon.httpapi
+  serial: 1
+
+  vars:
+    ansible_network_os: arista.eos.eos
+    ansible_user: cvpadmin
+    ansible_password: cetest.123
+    ansible_become: true
+    ansible_become_method: enable
+    ansible_httpapi_use_ssl: true
+    ansible_httpapi_validate_certs: false
+
+  tasks:
+    - name: Push server bootstrap configuration
+      arista.eos.eos_config:
+        src: "{{ playbook_dir }}/server-configurations/{{ inventory_hostname }}.txt"
+        replace: config
+
+    - name: Save configuration to flash
+      arista.eos.eos_command:
+        commands:
+          - write memory
+
+    - name: Confirm hostname
+      arista.eos.eos_command:
+        commands:
+          - show hostname
+      register: hostname_output
+
+    - name: Display result
+      debug:
+        msg: "✅ {{ inventory_hostname }} reset to bootstrap - {{ hostname_output.stdout[0] }}"
+
 - name: Reset Summary
   hosts: localhost
   gather_facts: true
@@ -123,10 +160,14 @@
           FABRIC RESET COMPLETE
           Timestamp: {{ ansible_date_time.iso8601 }}
           ============================================
-          All 16 switches returned to bootstrap state.
+          All 16 switches and 4 servers returned to
+          bootstrap state.
 
           To restore the full fabric run:
             ansible-playbook deploy-cvp.yml
 
           Then approve the Change Control in CVP.
+
+          To restore server configs run:
+            ansible-playbook push-server-configs.yml
           ============================================
