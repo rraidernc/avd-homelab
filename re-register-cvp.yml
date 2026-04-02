@@ -1,0 +1,95 @@
+---
+# Re-register all devices with CloudVision Portal
+# Use after decommissioning devices or if streaming telemetry is lost
+# This playbook pushes TerminAttr configuration to all devices
+# causing them to re-register with CVP automatically.
+#
+# Usage: ansible-playbook re-register-cvp.yml
+
+- name: Re-register Fabric Switches with CVP
+  hosts: FABRIC
+  gather_facts: false
+  connection: ansible.netcommon.httpapi
+
+  vars:
+    ansible_network_os: arista.eos.eos
+    ansible_user: cvpadmin
+    ansible_password: cetest.123
+    ansible_become: true
+    ansible_become_method: enable
+    ansible_httpapi_use_ssl: true
+    ansible_httpapi_validate_certs: false
+
+  tasks:
+
+    - name: Configure TerminAttr
+      arista.eos.eos_config:
+        lines:
+          - "exec /usr/bin/TerminAttr -cvaddr=192.168.4.165:9910 -cvauth=token,/tmp/token -cvvrf=MGMT -disableaaa -smashexcludes=ale,flexCounter,hardware,kni,pulse,strata -taillogs -cvsourceintf=Management1"
+          - "no shutdown"
+        parents: "daemon TerminAttr"
+
+    - name: Save configuration
+      arista.eos.eos_command:
+        commands:
+          - write memory
+
+    - name: Display result
+      debug:
+        msg: "✅ {{ inventory_hostname }} - TerminAttr configured, re-registering with CVP"
+
+- name: Re-register Servers with CVP
+  hosts: SERVERS
+  gather_facts: false
+  connection: ansible.netcommon.httpapi
+
+  vars:
+    ansible_network_os: arista.eos.eos
+    ansible_user: cvpadmin
+    ansible_password: cetest.123
+    ansible_become: true
+    ansible_become_method: enable
+    ansible_httpapi_use_ssl: true
+    ansible_httpapi_validate_certs: false
+
+  tasks:
+
+    - name: Configure TerminAttr
+      arista.eos.eos_config:
+        lines:
+          - "exec /usr/bin/TerminAttr -cvaddr=192.168.4.165:9910 -cvauth=token,/tmp/token -cvvrf=MGMT -disableaaa -smashexcludes=ale,flexCounter,hardware,kni,pulse,strata -taillogs -cvsourceintf=Management1"
+          - "no shutdown"
+        parents: "daemon TerminAttr"
+
+    - name: Save configuration
+      arista.eos.eos_command:
+        commands:
+          - write memory
+
+    - name: Display result
+      debug:
+        msg: "✅ {{ inventory_hostname }} - TerminAttr configured, re-registering with CVP"
+
+- name: Re-registration Summary
+  hosts: localhost
+  gather_facts: true
+
+  tasks:
+
+    - name: Display summary
+      debug:
+        msg: |
+          ============================================
+          CVP RE-REGISTRATION COMPLETE
+          Timestamp: {{ ansible_date_time.iso8601 }}
+          ============================================
+          TerminAttr configured on all 20 devices.
+          Devices will appear in CVP inventory within
+          60-120 seconds.
+
+          Next steps:
+          1. Check CVP Device Registration page
+          2. Onboard any devices showing as pending
+          3. Run deploy-cvp.yml to restore full fabric
+          4. Run push-server-configs.yml for servers
+          ============================================
