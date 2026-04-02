@@ -130,7 +130,7 @@
   tasks:
     - name: Push server bootstrap configuration
       arista.eos.eos_config:
-        src: "{{ playbook_dir }}/server-configurations/{{ inventory_hostname }}.txt"
+        src: "{{ playbook_dir }}/switch-basic-configurations/{{ inventory_hostname }}-basic-configuration.txt"
         replace: config
 
     - name: Save configuration to flash
@@ -165,8 +165,7 @@
 
           To restore the full fabric run:
             ansible-playbook deploy-cvp.yml
-
-          Then approve the Change Control in CVP.
+            (Approve the Change Control in CVP)
 
           To restore server configs run:
             ansible-playbook push-server-configs.yml
