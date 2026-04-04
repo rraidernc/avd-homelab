@@ -267,3 +267,5 @@ To extend this to a production environment:
 - **Multi-environment** — dev/staging/prod fabric definitions
 - **Automated Testing** — ANTA runs as part of CI pipeline before merge
 - **Peer Review** — all `group_vars` changes reviewed via pull requests
+
+# NOTE: Upgrade to Ansible AVD version 6.1.0 has been completed. 
