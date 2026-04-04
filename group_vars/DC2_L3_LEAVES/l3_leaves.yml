@@ -27,6 +27,17 @@ l3leaf:
           uplink_switch_interfaces: [ Ethernet2, Ethernet2 ]
     - group: DC2_L3_LEAF2
       bgp_as: 65202
+      nodes:
+        - name: dc2-leaf2a
+          id: 3
+          mgmt_ip: 192.168.4.136/22
+          uplink_switch_interfaces: [ Ethernet3, Ethernet3 ]
+        - name: dc2-leaf2b
+          id: 4
+          mgmt_ip: 192.168.4.137/22
+          uplink_switch_interfaces: [ Ethernet4, Ethernet4 ]
+    - group: DC2_BORDER_LEAF1
+      bgp_as: 65203
       evpn_gateway:
         evpn_l2:
           enabled: true
@@ -34,17 +45,17 @@ l3leaf:
           enabled: true
           inter_domain: true
       nodes:
-        - name: dc2-leaf2a
-          id: 3
-          mgmt_ip: 192.168.4.136/22
-          uplink_switch_interfaces: [ Ethernet3, Ethernet3 ]
+        - name: dc2-border-leaf1a
+          id: 5
+          mgmt_ip: 192.168.4.142/22
+          uplink_switch_interfaces: [ Ethernet5, Ethernet5 ]
           evpn_gateway:
             remote_peers:
-              - hostname: dc1-leaf2a
-        - name: dc2-leaf2b
-          id: 4
-          mgmt_ip: 192.168.4.137/22
-          uplink_switch_interfaces: [ Ethernet4, Ethernet4 ]
+              - hostname: dc1-border-leaf1a
+        - name: dc2-border-leaf1b
+          id: 6
+          mgmt_ip: 192.168.4.143/22
+          uplink_switch_interfaces: [ Ethernet6, Ethernet6 ]
           evpn_gateway:
             remote_peers:
-              - hostname: dc1-leaf2b
+              - hostname: dc1-border-leaf1b

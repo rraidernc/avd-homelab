@@ -48,7 +48,7 @@ default_interfaces:
   - types: [l3leaf]
     platforms: [default]
     uplink_interfaces: [Ethernet1-2]
-    mlag_interfaces: [Ethernet3-4]
+    mlag_interfaces: [Ethernet3]
     downlink_interfaces: [Ethernet8]
   - types: [l2leaf]
     platforms: [default]
@@ -62,16 +62,16 @@ l3_edge:
   p2p_links_profiles:
     - name: DCI_profile
       ip_pool: DCI_IP_pool
-      as: [65102, 65202]
+      as: [65103, 65203]
       include_in_underlay_protocol: true
   p2p_links:
-    - nodes: [dc1-leaf2a, dc2-leaf2a]
+    - nodes: [dc1-border-leaf1a, dc2-border-leaf1a]
       profile: DCI_profile
-      interfaces: [Ethernet6, Ethernet6]
+      interfaces: [Ethernet4, Ethernet4]
       ip: [172.100.100.0/31, 172.100.100.1/31]
-    - nodes: [dc1-leaf2b, dc2-leaf2b]
+    - nodes: [dc1-border-leaf1b, dc2-border-leaf1b]
       profile: DCI_profile
-      interfaces: [Ethernet6, Ethernet6]
+      interfaces: [Ethernet4, Ethernet4]
       ip: [172.100.100.2/31, 172.100.100.3/31]
 
 # CloudVision Portal definitions
@@ -82,11 +82,6 @@ cv_settings:
         - name: 192.168.4.165
   terminattr:
     disable_aaa: true
-
-# DNS Server
-dns_settings:
-  servers:
-    - ip_address: 8.8.8.8
 
 # NTP
 ntp_settings:

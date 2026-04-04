@@ -25,6 +25,12 @@ all:
                       ansible_host: 192.168.4.126
                     dc1-leaf2b:
                       ansible_host: 192.168.4.127
+                DC1_BORDER_LEAF1:
+                  hosts:
+                    dc1-border-leaf1a:
+                      ansible_host: 192.168.4.140
+                    dc1-border-leaf1b:
+                      ansible_host: 192.168.4.141
             DC1_L2_LEAVES:
               children:
                 DC1_L2_LEAF1:
@@ -57,6 +63,12 @@ all:
                       ansible_host: 192.168.4.136
                     dc2-leaf2b:
                       ansible_host: 192.168.4.137
+                DC2_BORDER_LEAF1:
+                  hosts:
+                    dc2-border-leaf1a:
+                      ansible_host: 192.168.4.142
+                    dc2-border-leaf1b:
+                      ansible_host: 192.168.4.143
             DC2_L2_LEAVES:
               children:
                 DC2_L2_LEAF1:

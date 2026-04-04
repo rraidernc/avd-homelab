@@ -4,8 +4,6 @@
 
 - [Management](#management)
   - [Management Interfaces](#management-interfaces)
-  - [IP Name Servers](#ip-name-servers)
-  - [Domain Lookup](#domain-lookup)
   - [NTP](#ntp)
   - [Management API HTTP](#management-api-http)
 - [Authentication](#authentication)
@@ -66,9 +64,9 @@
 
 ##### IPv6
 
-| Management Interface | Description | Type | VRF | IPv6 Address | IPv6 Gateway |
-| -------------------- | ----------- | ---- | --- | ------------ | ------------ |
-| Management1 | OOB_MANAGEMENT | oob | MGMT | - | - |
+| Management Interface | Description | Type | VRF | IPv6 Address | IPv6 Gateway | ND RA RX Accept | ND RA Disabled | ND Managed Config Flag |
+| -------------------- | ----------- | ---- | --- | ------------ | ------------ | --------------- | -------------- | ---------------------- |
+| Management1 | OOB_MANAGEMENT | oob | MGMT | - | - | - | - | - |
 
 #### Management Interfaces Device Configuration
 
@@ -79,34 +77,6 @@ interface Management1
    no shutdown
    vrf MGMT
    ip address 192.168.4.136/22
-```
-
-### IP Name Servers
-
-#### IP Name Servers Summary
-
-| Name Server | VRF | Priority |
-| ----------- | --- | -------- |
-| 8.8.8.8 | MGMT | - |
-
-#### IP Name Servers Device Configuration
-
-```eos
-ip name-server vrf MGMT 8.8.8.8
-```
-
-### Domain Lookup
-
-#### DNS Domain Lookup Summary
-
-| Source interface | vrf |
-| ---------------- | --- |
-| Management1 | MGMT |
-
-#### DNS Domain Lookup Device Configuration
-
-```eos
-ip domain lookup vrf MGMT source-interface Management1
 ```
 
 ### NTP
@@ -121,9 +91,11 @@ ip domain lookup vrf MGMT source-interface Management1
 
 ##### NTP Servers
 
-| Server | VRF | Preferred | Burst | iBurst | Version | Min Poll | Max Poll | Local-interface | Key |
-| ------ | --- | --------- | ----- | ------ | ------- | -------- | -------- | --------------- | --- |
-| 192.168.4.250 | MGMT | True | - | - | - | - | - | - | - |
+NTP servers VRF: MGMT
+
+| Server | Preferred | Burst | iBurst | Version | Min Poll | Max Poll | Local-interface | Key |
+| ------ | --------- | ----- | ------ | ------- | -------- | -------- | --------------- | --- |
+| 192.168.4.250 | True | - | - | - | - | - | - | - |
 
 #### NTP Device Configuration
 
@@ -137,9 +109,9 @@ ntp server vrf MGMT 192.168.4.250 prefer
 
 #### Management API HTTP Summary
 
-| HTTP | HTTPS | UNIX-Socket | Default Services |
-| ---- | ----- | ----------- | ---------------- |
-| False | True | - | - |
+| HTTP | HTTPS | UNIX-Socket | Default Services | Session Timeout |
+| ---- | ----- | ----------- | ---------------- | --------------- |
+| False | True | - | - | 1440 minutes |
 
 #### Management API VRF Access
 
@@ -254,7 +226,7 @@ spanning-tree mst 0 priority 4096
 ### Internal VLAN Allocation Policy Summary
 
 | Policy Allocation | Range Beginning | Range Ending |
-| ------------------| --------------- | ------------ |
+| ----------------- | --------------- | ------------ |
 | ascending | 1006 | 1199 |
 
 ### Internal VLAN Allocation Policy Device Configuration
@@ -331,7 +303,6 @@ vlan 4094
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | Channel-Group |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
 | Ethernet3 | MLAG_dc2-leaf2b_Ethernet3 | *trunk | *- | *- | *MLAG | 3 |
-| Ethernet4 | MLAG_dc2-leaf2b_Ethernet4 | *trunk | *- | *- | *MLAG | 3 |
 | Ethernet5 | SERVER_dc2-leaf2-server1_PCI1 | *trunk | *11-12,21-22 | *4092 | *- | 5 |
 | Ethernet8 | L2_dc2-leaf2c_Ethernet1 | *trunk | *11-12,21-22,3401-3402 | *- | *- | 8 |
 
@@ -339,11 +310,10 @@ vlan 4094
 
 ##### IPv4
 
-| Interface | Description | Channel Group | IP Address | VRF |  MTU | Shutdown | ACL In | ACL Out |
-| --------- | ----------- | ------------- | ---------- | ----| ---- | -------- | ------ | ------- |
+| Interface | Description | Channel Group | IP Address | VRF | MTU | Shutdown | ACL In | ACL Out |
+| --------- | ----------- | ------------- | ---------- | --- | --- | -------- | ------ | ------- |
 | Ethernet1 | P2P_dc2-spine1_Ethernet3 | - | 10.255.255.73/31 | default | 1500 | False | - | - |
 | Ethernet2 | P2P_dc2-spine2_Ethernet3 | - | 10.255.255.75/31 | default | 1500 | False | - | - |
-| Ethernet6 | P2P_dc1-leaf2a_Ethernet6 | - | 172.100.100.1/31 | default | 1500 | False | - | - |
 
 #### Ethernet Interfaces Device Configuration
 
@@ -368,22 +338,10 @@ interface Ethernet3
    no shutdown
    channel-group 3 mode active
 !
-interface Ethernet4
-   description MLAG_dc2-leaf2b_Ethernet4
-   no shutdown
-   channel-group 3 mode active
-!
 interface Ethernet5
    description SERVER_dc2-leaf2-server1_PCI1
    no shutdown
    channel-group 5 mode active
-!
-interface Ethernet6
-   description P2P_dc1-leaf2a_Ethernet6
-   no shutdown
-   mtu 1500
-   no switchport
-   ip address 172.100.100.1/31
 !
 interface Ethernet8
    description L2_dc2-leaf2c_Ethernet1
@@ -398,7 +356,7 @@ interface Ethernet8
 ##### L2
 
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | LACP Fallback Timeout | LACP Fallback Mode | MLAG ID | EVPN ESI |
-| --------- | ----------- | ---- | ----- | ----------- | ------------| --------------------- | ------------------ | ------- | -------- |
+| --------- | ----------- | ---- | ----- | ----------- | ----------- | --------------------- | ------------------ | ------- | -------- |
 | Port-Channel3 | MLAG_dc2-leaf2b_Port-Channel3 | trunk | - | - | MLAG | - | - | - | - |
 | Port-Channel5 | SERVER_dc2-leaf2-server1_Bond1 | trunk | 11-12,21-22 | 4092 | - | - | - | 5 | - |
 | Port-Channel8 | L2_dc2-leaf2c_Port-Channel1 | trunk | 11-12,21-22,3401-3402 | - | - | - | - | 8 | - |
@@ -448,8 +406,8 @@ interface Port-Channel8
 
 ##### IPv6
 
-| Interface | Description | VRF | IPv6 Address |
-| --------- | ----------- | --- | ------------ |
+| Interface | Description | VRF | IPv6 Addresses |
+| --------- | ----------- | --- | -------------- |
 | Loopback0 | ROUTER_ID | default | - |
 | Loopback1 | VXLAN_TUNNEL_SOURCE | default | - |
 | Loopback10 | DIAG_VRF_VRF10 | VRF10 | - |
@@ -486,8 +444,8 @@ interface Loopback11
 
 #### VLAN Interfaces Summary
 
-| Interface | Description | VRF |  MTU | Shutdown |
-| --------- | ----------- | --- | ---- | -------- |
+| Interface | Description | VRF | MTU | Shutdown |
+| --------- | ----------- | --- | --- | -------- |
 | Vlan11 | VRF10_VLAN11 | VRF10 | - | False |
 | Vlan12 | VRF10_VLAN12 | VRF10 | - | False |
 | Vlan21 | VRF11_VLAN21 | VRF11 | - | False |
@@ -501,14 +459,14 @@ interface Loopback11
 
 | Interface | VRF | IP Address | IP Address Virtual | IP Router Virtual Address | ACL In | ACL Out |
 | --------- | --- | ---------- | ------------------ | ------------------------- | ------ | ------- |
-| Vlan11 |  VRF10  |  -  |  10.10.11.1/24  |  -  |  -  |  -  |
-| Vlan12 |  VRF10  |  -  |  10.10.12.1/24  |  -  |  -  |  -  |
-| Vlan21 |  VRF11  |  -  |  10.10.21.1/24  |  -  |  -  |  -  |
-| Vlan22 |  VRF11  |  -  |  10.10.22.1/24  |  -  |  -  |  -  |
-| Vlan3009 |  VRF10  |  10.255.129.100/31  |  -  |  -  |  -  |  -  |
-| Vlan3010 |  VRF11  |  10.255.129.100/31  |  -  |  -  |  -  |  -  |
-| Vlan4093 |  default  |  10.255.129.100/31  |  -  |  -  |  -  |  -  |
-| Vlan4094 |  default  |  10.255.129.68/31  |  -  |  -  |  -  |  -  |
+| Vlan11 | VRF10 | - | 10.10.11.1/24 | - | - | - |
+| Vlan12 | VRF10 | - | 10.10.12.1/24 | - | - | - |
+| Vlan21 | VRF11 | - | 10.10.21.1/24 | - | - | - |
+| Vlan22 | VRF11 | - | 10.10.22.1/24 | - | - | - |
+| Vlan3009 | VRF10 | 10.255.129.100/31 | - | - | - | - |
+| Vlan3010 | VRF11 | 10.255.129.100/31 | - | - | - | - |
+| Vlan4093 | default | 10.255.129.100/31 | - | - | - | - |
+| Vlan4094 | default | 10.255.129.68/31 | - | - | - | - |
 
 #### VLAN Interfaces Device Configuration
 
@@ -697,20 +655,9 @@ ASN Notation: asplain
 | BGP Tuning |
 | ---------- |
 | no bgp default ipv4-unicast |
-| maximum-paths 4 ecmp 4 |
+| maximum-paths 4 |
 
 #### Router BGP Peer Groups
-
-##### EVPN-OVERLAY-CORE
-
-| Settings | Value |
-| -------- | ----- |
-| Address Family | evpn |
-| Source | Loopback0 |
-| BFD | True |
-| Ebgp multihop | 15 |
-| Send community | all |
-| Maximum routes | 0 (no limit) |
 
 ##### EVPN-OVERLAY-PEERS
 
@@ -729,7 +676,7 @@ ASN Notation: asplain
 | -------- | ----- |
 | Address Family | ipv4 |
 | Send community | all |
-| Maximum routes | 12000 |
+| Maximum routes | 256000 |
 
 ##### MLAG-IPv4-UNDERLAY-PEER
 
@@ -739,19 +686,17 @@ ASN Notation: asplain
 | Remote AS | 65202 |
 | Next-hop self | True |
 | Send community | all |
-| Maximum routes | 12000 |
+| Maximum routes | 256000 |
 
 #### BGP Neighbors
 
 | Neighbor | Remote AS | VRF | Shutdown | Send-community | Maximum-routes | Allowas-in | BFD | RIB Pre-Policy Retain | Route-Reflector Client | Passive | TTL Max Hops |
 | -------- | --------- | --- | -------- | -------------- | -------------- | ---------- | --- | --------------------- | ---------------------- | ------- | ------------ |
-| 10.255.0.5 | 65102 | default | - | Inherited from peer group EVPN-OVERLAY-CORE | Inherited from peer group EVPN-OVERLAY-CORE | - | Inherited from peer group EVPN-OVERLAY-CORE | - | - | - | - |
 | 10.255.128.11 | 65200 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
 | 10.255.128.12 | 65200 | default | - | Inherited from peer group EVPN-OVERLAY-PEERS | Inherited from peer group EVPN-OVERLAY-PEERS | - | Inherited from peer group EVPN-OVERLAY-PEERS | - | - | - | - |
 | 10.255.129.101 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | default | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 | 10.255.255.72 | 65200 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 10.255.255.74 | 65200 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
-| 172.100.100.0 | 65102 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 10.255.129.101 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF10 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 | 10.255.129.101 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF11 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
 
@@ -761,27 +706,18 @@ ASN Notation: asplain
 
 | Peer Group | Activate | Route-map In | Route-map Out | Peer-tag In | Peer-tag Out | Encapsulation | Next-hop-self Source Interface |
 | ---------- | -------- | ------------ | ------------- | ----------- | ------------ | ------------- | ------------------------------ |
-| EVPN-OVERLAY-CORE | True | - | - | - | - | default | - |
 | EVPN-OVERLAY-PEERS | True | - | - | - | - | default | - |
-
-##### EVPN DCI Gateway Summary
-
-| Settings | Value |
-| -------- | ----- |
-| Remote Domain Peer Groups | EVPN-OVERLAY-CORE |
-| L3 Gateway Configured | True |
-| L3 Gateway Inter-domain | True |
 
 #### Router BGP VLANs
 
 | VLAN | Route-Distinguisher | Both Route-Target | Import Route Target | Export Route-Target | Redistribute |
 | ---- | ------------------- | ----------------- | ------------------- | ------------------- | ------------ |
-| 11 | 10.255.128.5:10011 | 10011:10011<br>remote 10011:10011 | - | - | learned |
-| 12 | 10.255.128.5:10012 | 10012:10012<br>remote 10012:10012 | - | - | learned |
-| 21 | 10.255.128.5:10021 | 10021:10021<br>remote 10021:10021 | - | - | learned |
-| 22 | 10.255.128.5:10022 | 10022:10022<br>remote 10022:10022 | - | - | learned |
-| 3401 | 10.255.128.5:13401 | 13401:13401<br>remote 13401:13401 | - | - | learned |
-| 3402 | 10.255.128.5:13402 | 13402:13402<br>remote 13402:13402 | - | - | learned |
+| 11 | 10.255.128.5:10011 | 10011:10011 | - | - | learned |
+| 12 | 10.255.128.5:10012 | 10012:10012 | - | - | learned |
+| 21 | 10.255.128.5:10021 | 10021:10021 | - | - | learned |
+| 22 | 10.255.128.5:10022 | 10022:10022 | - | - | learned |
+| 3401 | 10.255.128.5:13401 | 13401:13401 | - | - | learned |
+| 3402 | 10.255.128.5:13402 | 13402:13402 | - | - | learned |
 
 #### Router BGP VRFs
 
@@ -797,13 +733,7 @@ ASN Notation: asplain
 router bgp 65202
    router-id 10.255.128.5
    no bgp default ipv4-unicast
-   maximum-paths 4 ecmp 4
-   neighbor EVPN-OVERLAY-CORE peer group
-   neighbor EVPN-OVERLAY-CORE update-source Loopback0
-   neighbor EVPN-OVERLAY-CORE bfd
-   neighbor EVPN-OVERLAY-CORE ebgp-multihop 15
-   neighbor EVPN-OVERLAY-CORE send-community
-   neighbor EVPN-OVERLAY-CORE maximum-routes 0
+   maximum-paths 4
    neighbor EVPN-OVERLAY-PEERS peer group
    neighbor EVPN-OVERLAY-PEERS update-source Loopback0
    neighbor EVPN-OVERLAY-PEERS bfd
@@ -814,7 +744,7 @@ router bgp 65202
    neighbor IPv4-UNDERLAY-PEERS peer group
    neighbor IPv4-UNDERLAY-PEERS password 7 <removed>
    neighbor IPv4-UNDERLAY-PEERS send-community
-   neighbor IPv4-UNDERLAY-PEERS maximum-routes 12000
+   neighbor IPv4-UNDERLAY-PEERS maximum-routes 256000
    neighbor MLAG-IPv4-UNDERLAY-PEER peer group
    neighbor MLAG-IPv4-UNDERLAY-PEER remote-as 65202
    neighbor MLAG-IPv4-UNDERLAY-PEER next-hop-self
@@ -822,10 +752,7 @@ router bgp 65202
    neighbor MLAG-IPv4-UNDERLAY-PEER route-map RM-MLAG-PEER-IN in
    neighbor MLAG-IPv4-UNDERLAY-PEER password 7 <removed>
    neighbor MLAG-IPv4-UNDERLAY-PEER send-community
-   neighbor MLAG-IPv4-UNDERLAY-PEER maximum-routes 12000
-   neighbor 10.255.0.5 peer group EVPN-OVERLAY-CORE
-   neighbor 10.255.0.5 remote-as 65102
-   neighbor 10.255.0.5 description dc1-leaf2a_Loopback0
+   neighbor MLAG-IPv4-UNDERLAY-PEER maximum-routes 256000
    neighbor 10.255.128.11 peer group EVPN-OVERLAY-PEERS
    neighbor 10.255.128.11 remote-as 65200
    neighbor 10.255.128.11 description dc2-spine1_Loopback0
@@ -840,61 +767,42 @@ router bgp 65202
    neighbor 10.255.255.74 peer group IPv4-UNDERLAY-PEERS
    neighbor 10.255.255.74 remote-as 65200
    neighbor 10.255.255.74 description dc2-spine2_Ethernet3
-   neighbor 172.100.100.0 peer group IPv4-UNDERLAY-PEERS
-   neighbor 172.100.100.0 remote-as 65102
-   neighbor 172.100.100.0 description dc1-leaf2a
    redistribute connected route-map RM-CONN-2-BGP
    !
    vlan 11
       rd 10.255.128.5:10011
-      rd evpn domain remote 10.255.128.5:10011
       route-target both 10011:10011
-      route-target import export evpn domain remote 10011:10011
       redistribute learned
    !
    vlan 12
       rd 10.255.128.5:10012
-      rd evpn domain remote 10.255.128.5:10012
       route-target both 10012:10012
-      route-target import export evpn domain remote 10012:10012
       redistribute learned
    !
    vlan 21
       rd 10.255.128.5:10021
-      rd evpn domain remote 10.255.128.5:10021
       route-target both 10021:10021
-      route-target import export evpn domain remote 10021:10021
       redistribute learned
    !
    vlan 22
       rd 10.255.128.5:10022
-      rd evpn domain remote 10.255.128.5:10022
       route-target both 10022:10022
-      route-target import export evpn domain remote 10022:10022
       redistribute learned
    !
    vlan 3401
       rd 10.255.128.5:13401
-      rd evpn domain remote 10.255.128.5:13401
       route-target both 13401:13401
-      route-target import export evpn domain remote 13401:13401
       redistribute learned
    !
    vlan 3402
       rd 10.255.128.5:13402
-      rd evpn domain remote 10.255.128.5:13402
       route-target both 13402:13402
-      route-target import export evpn domain remote 13402:13402
       redistribute learned
    !
    address-family evpn
-      neighbor EVPN-OVERLAY-CORE activate
-      neighbor EVPN-OVERLAY-CORE domain remote
       neighbor EVPN-OVERLAY-PEERS activate
-      neighbor default next-hop-self received-evpn-routes route-type ip-prefix inter-domain
    !
    address-family ipv4
-      no neighbor EVPN-OVERLAY-CORE activate
       no neighbor EVPN-OVERLAY-PEERS activate
       neighbor IPv4-UNDERLAY-PEERS activate
       neighbor MLAG-IPv4-UNDERLAY-PEER activate

@@ -1,0 +1,29 @@
+! dc1-border-leaf1b-basic-configuration.txt
+! Basic bootstrap config - management access only
+!
+hostname dc1-border-leaf1b
+!
+service routing protocols model multi-agent
+!
+username cvpadmin privilege 15 role network-admin secret sha512 $6$godNzffxtiMxcMOR$HNbUcjgSNlGXXENH47HNRwHwOHePBoqfhfxsWDeT8bHZ4rKdbeJwLrDAnIhQ1SG7MifORz01MW9W1pZEm/AB81
+!
+vrf instance MGMT
+!
+interface Management1
+   description OOB_MANAGEMENT
+   no shutdown
+   vrf MGMT
+   ip address 192.168.4.141/22
+!
+ip route vrf MGMT 0.0.0.0/0 192.168.4.1
+!
+management api http-commands
+   protocol https
+   no shutdown
+   !
+   vrf MGMT
+      no shutdown
+!
+end
+!
+copy running-config startup-config
