@@ -15,6 +15,13 @@ tenants:
             send_community: all
             maximum_routes: 0
             nodes: [dc1-border-leaf1a, dc1-border-leaf1b]
+        static_routes:
+          - prefix: 10.10.21.0/24
+            next_hop: 10.255.251.2
+            nodes: [dc1-border-leaf1a, dc1-border-leaf1b]
+          - prefix: 10.10.22.0/24
+            next_hop: 10.255.251.2
+            nodes: [dc1-border-leaf1a, dc1-border-leaf1b]
         svis:
           - id: 11
             name: VRF10_VLAN11
@@ -44,6 +51,13 @@ tenants:
             send_community: all
             maximum_routes: 0
             nodes: [dc1-border-leaf1a, dc1-border-leaf1b]
+        static_routes:
+          - prefix: 10.10.11.0/24
+            next_hop: 10.255.252.2
+            nodes: [dc1-border-leaf1a, dc1-border-leaf1b]
+          - prefix: 10.10.12.0/24
+            next_hop: 10.255.252.2
+            nodes: [dc1-border-leaf1a, dc1-border-leaf1b]
         svis:
           - id: 21
             name: VRF11_VLAN21
@@ -66,3 +80,4 @@ tenants:
         name: L2_VLAN3401
       - id: 3402
         name: L2_VLAN3402
+        

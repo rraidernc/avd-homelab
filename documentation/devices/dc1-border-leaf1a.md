@@ -654,12 +654,20 @@ ip routing vrf VRF11
 | VRF | Destination Prefix | Next Hop IP | Exit interface | Administrative Distance | Tag | Route Name | Metric |
 | --- | ------------------ | ----------- | -------------- | ----------------------- | --- | ---------- | ------ |
 | MGMT | 0.0.0.0/0 | 192.168.4.1 | - | 1 | - | - | - |
+| VRF10 | 10.10.21.0/24 | 10.255.251.2 | - | 1 | - | - | - |
+| VRF10 | 10.10.22.0/24 | 10.255.251.2 | - | 1 | - | - | - |
+| VRF11 | 10.10.11.0/24 | 10.255.252.2 | - | 1 | - | - | - |
+| VRF11 | 10.10.12.0/24 | 10.255.252.2 | - | 1 | - | - | - |
 
 #### Static Routes Device Configuration
 
 ```eos
 !
 ip route vrf MGMT 0.0.0.0/0 192.168.4.1
+ip route vrf VRF10 10.10.21.0/24 10.255.251.2
+ip route vrf VRF10 10.10.22.0/24 10.255.251.2
+ip route vrf VRF11 10.10.11.0/24 10.255.252.2
+ip route vrf VRF11 10.10.12.0/24 10.255.252.2
 ```
 
 ### Router BGP
@@ -769,8 +777,8 @@ ASN Notation: asplain
 
 | VRF | Route-Distinguisher | Redistribute | Graceful Restart |
 | --- | ------------------- | ------------ | ---------------- |
-| VRF10 | 10.255.0.7:10 | connected | - |
-| VRF11 | 10.255.0.7:11 | connected | - |
+| VRF10 | 10.255.0.7:10 | connected<br>static | - |
+| VRF11 | 10.255.0.7:11 | connected<br>static | - |
 
 #### Router BGP Device Configuration
 
@@ -907,6 +915,7 @@ router bgp 65103
       neighbor 10.255.251.2 send-community
       neighbor 10.255.251.2 maximum-routes 0
       redistribute connected route-map RM-CONN-2-BGP-VRFS
+      redistribute static
       !
       address-family ipv4
          neighbor 10.255.251.2 activate
@@ -923,6 +932,7 @@ router bgp 65103
       neighbor 10.255.252.2 send-community
       neighbor 10.255.252.2 maximum-routes 0
       redistribute connected route-map RM-CONN-2-BGP-VRFS
+      redistribute static
       !
       address-family ipv4
          neighbor 10.255.252.2 activate

@@ -456,6 +456,8 @@ router_bgp:
       connected:
         enabled: true
         route_map: RM-CONN-2-BGP-VRFS
+      static:
+        enabled: true
     address_family_ipv4:
       neighbors:
       - ip_address: 10.255.251.2
@@ -485,6 +487,8 @@ router_bgp:
       connected:
         enabled: true
         route_map: RM-CONN-2-BGP-VRFS
+      static:
+        enabled: true
     address_family_ipv4:
       neighbors:
       - ip_address: 10.255.252.2
@@ -500,6 +504,18 @@ static_routes:
 - vrf: MGMT
   prefix: 0.0.0.0/0
   next_hop: 192.168.4.1
+- vrf: VRF10
+  prefix: 10.10.21.0/24
+  next_hop: 10.255.251.2
+- vrf: VRF10
+  prefix: 10.10.22.0/24
+  next_hop: 10.255.251.2
+- vrf: VRF11
+  prefix: 10.10.11.0/24
+  next_hop: 10.255.252.2
+- vrf: VRF11
+  prefix: 10.10.12.0/24
+  next_hop: 10.255.252.2
 transceiver_qsfp_default_mode_4x10: true
 virtual_source_nat_vrfs:
 - name: VRF10
