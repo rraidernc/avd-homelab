@@ -204,6 +204,8 @@ vlan internal order ascending range 1006 1199
 | 22 | VRF11_VLAN22 | - |
 | 3401 | L2_VLAN3401 | - |
 | 3402 | L2_VLAN3402 | - |
+| 3901 | VRF10_FW_TRANSIT | - |
+| 3902 | VRF11_FW_TRANSIT | - |
 
 ### VLANs Device Configuration
 
@@ -226,6 +228,12 @@ vlan 3401
 !
 vlan 3402
    name L2_VLAN3402
+!
+vlan 3901
+   name VRF10_FW_TRANSIT
+!
+vlan 3902
+   name VRF11_FW_TRANSIT
 ```
 
 ## Interfaces
@@ -238,8 +246,8 @@ vlan 3402
 
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | Channel-Group |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
-| Ethernet1 | L2_dc2-leaf1a_Ethernet8 | *trunk | *11-12,21-22,3401-3402 | *- | *- | 1 |
-| Ethernet2 | L2_dc2-leaf1b_Ethernet8 | *trunk | *11-12,21-22,3401-3402 | *- | *- | 1 |
+| Ethernet1 | L2_dc2-leaf1a_Ethernet8 | *trunk | *11-12,21-22,3401-3402,3901-3902 | *- | *- | 1 |
+| Ethernet2 | L2_dc2-leaf1b_Ethernet8 | *trunk | *11-12,21-22,3401-3402,3901-3902 | *- | *- | 1 |
 | Ethernet5 | SERVER_dc2-leaf1-server1_iLO | access | 11 | - | - | - |
 
 *Inherited from Port-Channel Interface
@@ -275,7 +283,7 @@ interface Ethernet5
 
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | LACP Fallback Timeout | LACP Fallback Mode | MLAG ID | EVPN ESI |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | --------------------- | ------------------ | ------- | -------- |
-| Port-Channel1 | L2_DC2_L3_LEAF1_Port-Channel8 | trunk | 11-12,21-22,3401-3402 | - | - | - | - | - | - |
+| Port-Channel1 | L2_DC2_L3_LEAF1_Port-Channel8 | trunk | 11-12,21-22,3401-3402,3901-3902 | - | - | - | - | - | - |
 
 #### Port-Channel Interfaces Device Configuration
 
@@ -284,7 +292,7 @@ interface Ethernet5
 interface Port-Channel1
    description L2_DC2_L3_LEAF1_Port-Channel8
    no shutdown
-   switchport trunk allowed vlan 11-12,21-22,3401-3402
+   switchport trunk allowed vlan 11-12,21-22,3401-3402,3901-3902
    switchport mode trunk
    switchport
 ```

@@ -3,10 +3,12 @@ l3leaf,dc1-border-leaf1a,,Ethernet1,spine,dc1-spine1,,Ethernet5,True
 l3leaf,dc1-border-leaf1a,,Ethernet2,spine,dc1-spine2,,Ethernet5,True
 l3leaf,dc1-border-leaf1a,,Ethernet3,mlag_peer,dc1-border-leaf1b,,Ethernet3,True
 l3leaf,dc1-border-leaf1a,,Ethernet4,l3leaf,dc2-border-leaf1a,,Ethernet4,True
+l3leaf,dc1-border-leaf1a,,Ethernet5,firewall,mills-avd-fw,,Et1,True
 l3leaf,dc1-border-leaf1b,,Ethernet1,spine,dc1-spine1,,Ethernet6,True
 l3leaf,dc1-border-leaf1b,,Ethernet2,spine,dc1-spine2,,Ethernet6,True
 l3leaf,dc1-border-leaf1b,,Ethernet3,mlag_peer,dc1-border-leaf1a,,Ethernet3,True
 l3leaf,dc1-border-leaf1b,,Ethernet4,l3leaf,dc2-border-leaf1b,,Ethernet4,True
+l3leaf,dc1-border-leaf1b,,Ethernet5,firewall,mills-avd-fw,,Et2,True
 l3leaf,dc1-leaf1a,,Ethernet1,spine,dc1-spine1,,Ethernet1,True
 l3leaf,dc1-leaf1a,,Ethernet2,spine,dc1-spine2,,Ethernet1,True
 l3leaf,dc1-leaf1a,,Ethernet3,mlag_peer,dc1-leaf1b,,Ethernet3,True

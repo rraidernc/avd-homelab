@@ -151,7 +151,7 @@ port_channel_interfaces:
     enabled: true
     mode: trunk
     trunk:
-      allowed_vlan: 11-12,21-22,3401-3402
+      allowed_vlan: 11-12,21-22,3401-3402,3901-3902
 - name: Port-Channel5
   description: SERVER_dc2-leaf1-server1_Bond1
   shutdown: false
@@ -290,6 +290,16 @@ router_bgp:
       - 10012:10012
     redistribute_routes:
     - learned
+  - id: 3901
+    metadata:
+      tenants:
+      - TENANT1
+    rd: 10.255.128.3:13901
+    route_targets:
+      both:
+      - 13901:13901
+    redistribute_routes:
+    - learned
   - id: 21
     metadata:
       tenants:
@@ -308,6 +318,16 @@ router_bgp:
     route_targets:
       both:
       - 10022:10022
+    redistribute_routes:
+    - learned
+  - id: 3902
+    metadata:
+      tenants:
+      - TENANT1
+    rd: 10.255.128.3:13902
+    route_targets:
+      both:
+      - 13902:13902
     redistribute_routes:
     - learned
   - id: 3401
@@ -428,6 +448,13 @@ vlan_interfaces:
   metadata:
     tenants:
     - TENANT1
+- name: Vlan3901
+  description: VRF10_FW_TRANSIT
+  shutdown: false
+  vrf: VRF10
+  metadata:
+    tenants:
+    - TENANT1
 - name: Vlan3009
   description: MLAG_L3_VRF_VRF10
   shutdown: false
@@ -451,6 +478,13 @@ vlan_interfaces:
   shutdown: false
   vrf: VRF11
   ip_address_virtual: 10.10.22.1/24
+  metadata:
+    tenants:
+    - TENANT1
+- name: Vlan3902
+  description: VRF11_FW_TRANSIT
+  shutdown: false
+  vrf: VRF11
   metadata:
     tenants:
     - TENANT1
@@ -494,6 +528,11 @@ vlans:
   metadata:
     tenants:
     - TENANT1
+- id: 3901
+  name: VRF10_FW_TRANSIT
+  metadata:
+    tenants:
+    - TENANT1
 - id: 3009
   name: MLAG_L3_VRF_VRF10
   trunk_groups:
@@ -508,6 +547,11 @@ vlans:
     - TENANT1
 - id: 22
   name: VRF11_VLAN22
+  metadata:
+    tenants:
+    - TENANT1
+- id: 3902
+  name: VRF11_FW_TRANSIT
   metadata:
     tenants:
     - TENANT1
@@ -553,10 +597,14 @@ vxlan_interface:
         vni: 10011
       - id: 12
         vni: 10012
+      - id: 3901
+        vni: 13901
       - id: 21
         vni: 10021
       - id: 22
         vni: 10022
+      - id: 3902
+        vni: 13902
       - id: 3401
         vni: 13401
       - id: 3402

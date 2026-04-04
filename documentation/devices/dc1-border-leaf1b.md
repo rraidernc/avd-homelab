@@ -250,6 +250,8 @@ vlan internal order ascending range 1006 1199
 | 3010 | MLAG_L3_VRF_VRF11 | MLAG |
 | 3401 | L2_VLAN3401 | - |
 | 3402 | L2_VLAN3402 | - |
+| 3901 | VRF10_FW_TRANSIT | - |
+| 3902 | VRF11_FW_TRANSIT | - |
 | 4093 | MLAG_L3 | MLAG |
 | 4094 | MLAG | MLAG |
 
@@ -283,6 +285,12 @@ vlan 3401
 vlan 3402
    name L2_VLAN3402
 !
+vlan 3901
+   name VRF10_FW_TRANSIT
+!
+vlan 3902
+   name VRF11_FW_TRANSIT
+!
 vlan 4093
    name MLAG_L3
    trunk group MLAG
@@ -303,6 +311,7 @@ vlan 4094
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | Channel-Group |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | ------------- |
 | Ethernet3 | MLAG_dc1-border-leaf1a_Ethernet3 | *trunk | *- | *- | *MLAG | 3 |
+| Ethernet5 | FIREWALL_mills-avd-fw_Et2 | *trunk | *3901-3902 | *- | *- | 5 |
 
 *Inherited from Port-Channel Interface
 
@@ -343,6 +352,11 @@ interface Ethernet4
    mtu 1500
    no switchport
    ip address 172.100.100.2/31
+!
+interface Ethernet5
+   description FIREWALL_mills-avd-fw_Et2
+   no shutdown
+   channel-group 5 mode active
 ```
 
 ### Port-Channel Interfaces
@@ -354,6 +368,7 @@ interface Ethernet4
 | Interface | Description | Mode | VLANs | Native VLAN | Trunk Group | LACP Fallback Timeout | LACP Fallback Mode | MLAG ID | EVPN ESI |
 | --------- | ----------- | ---- | ----- | ----------- | ----------- | --------------------- | ------------------ | ------- | -------- |
 | Port-Channel3 | MLAG_dc1-border-leaf1a_Port-Channel3 | trunk | - | - | MLAG | - | - | - | - |
+| Port-Channel5 | FIREWALL_mills-avd-fw_Port-Channel1 | trunk | 3901-3902 | - | - | - | - | 5 | - |
 
 #### Port-Channel Interfaces Device Configuration
 
@@ -365,6 +380,15 @@ interface Port-Channel3
    switchport mode trunk
    switchport trunk group MLAG
    switchport
+!
+interface Port-Channel5
+   description FIREWALL_mills-avd-fw_Port-Channel1
+   no shutdown
+   switchport trunk allowed vlan 3901-3902
+   switchport mode trunk
+   switchport
+   mlag 5
+   spanning-tree portfast
 ```
 
 ### Loopback Interfaces
@@ -428,6 +452,8 @@ interface Loopback11
 | Vlan22 | VRF11_VLAN22 | VRF11 | - | False |
 | Vlan3009 | MLAG_L3_VRF_VRF10 | VRF10 | 1500 | False |
 | Vlan3010 | MLAG_L3_VRF_VRF11 | VRF11 | 1500 | False |
+| Vlan3901 | VRF10_FW_TRANSIT | VRF10 | - | False |
+| Vlan3902 | VRF11_FW_TRANSIT | VRF11 | - | False |
 | Vlan4093 | MLAG_L3 | default | 1500 | False |
 | Vlan4094 | MLAG | default | 1500 | False |
 
@@ -441,6 +467,8 @@ interface Loopback11
 | Vlan22 | VRF11 | - | 10.10.22.1/24 | - | - | - |
 | Vlan3009 | VRF10 | 10.255.1.105/31 | - | - | - | - |
 | Vlan3010 | VRF11 | 10.255.1.105/31 | - | - | - | - |
+| Vlan3901 | VRF10 | 10.255.251.1/29 | - | - | - | - |
+| Vlan3902 | VRF11 | 10.255.252.1/29 | - | - | - | - |
 | Vlan4093 | default | 10.255.1.105/31 | - | - | - | - |
 | Vlan4094 | default | 10.255.1.73/31 | - | - | - | - |
 
@@ -486,6 +514,18 @@ interface Vlan3010
    vrf VRF11
    ip address 10.255.1.105/31
 !
+interface Vlan3901
+   description VRF10_FW_TRANSIT
+   no shutdown
+   vrf VRF10
+   ip address 10.255.251.1/29
+!
+interface Vlan3902
+   description VRF11_FW_TRANSIT
+   no shutdown
+   vrf VRF11
+   ip address 10.255.252.1/29
+!
 interface Vlan4093
    description MLAG_L3
    no shutdown
@@ -520,6 +560,8 @@ interface Vlan4094
 | 22 | 10022 | - | - |
 | 3401 | 13401 | - | - |
 | 3402 | 13402 | - | - |
+| 3901 | 13901 | - | - |
+| 3902 | 13902 | - | - |
 
 ##### VRF to VNI and Multicast Group Mappings
 
@@ -543,6 +585,8 @@ interface Vxlan1
    vxlan vlan 22 vni 10022
    vxlan vlan 3401 vni 13401
    vxlan vlan 3402 vni 13402
+   vxlan vlan 3901 vni 13901
+   vxlan vlan 3902 vni 13902
    vxlan vrf VRF10 vni 10
    vxlan vrf VRF11 vni 11
 ```
@@ -687,7 +731,9 @@ ASN Notation: asplain
 | 10.255.255.22 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 172.100.100.3 | 65203 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 10.255.1.104 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF10 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
+| 10.255.251.2 | 65500 | VRF10 | - | all | 0 (no limit) | - | - | - | - | - | - |
 | 10.255.1.104 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF11 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
+| 10.255.252.2 | 65500 | VRF11 | - | all | 0 (no limit) | - | - | - | - | - | - |
 
 #### Router BGP EVPN Address Family
 
@@ -716,6 +762,8 @@ ASN Notation: asplain
 | 22 | 10.255.0.8:10022 | 10022:10022<br>remote 10022:10022 | - | - | learned |
 | 3401 | 10.255.0.8:13401 | 13401:13401<br>remote 13401:13401 | - | - | learned |
 | 3402 | 10.255.0.8:13402 | 13402:13402<br>remote 13402:13402 | - | - | learned |
+| 3901 | 10.255.0.8:13901 | 13901:13901<br>remote 13901:13901 | - | - | learned |
+| 3902 | 10.255.0.8:13902 | 13902:13902<br>remote 13902:13902 | - | - | learned |
 
 #### Router BGP VRFs
 
@@ -821,6 +869,20 @@ router bgp 65103
       route-target import export evpn domain remote 13402:13402
       redistribute learned
    !
+   vlan 3901
+      rd 10.255.0.8:13901
+      rd evpn domain remote 10.255.0.8:13901
+      route-target both 13901:13901
+      route-target import export evpn domain remote 13901:13901
+      redistribute learned
+   !
+   vlan 3902
+      rd 10.255.0.8:13902
+      rd evpn domain remote 10.255.0.8:13902
+      route-target both 13902:13902
+      route-target import export evpn domain remote 13902:13902
+      redistribute learned
+   !
    address-family evpn
       neighbor EVPN-OVERLAY-CORE activate
       neighbor EVPN-OVERLAY-CORE domain remote
@@ -840,7 +902,14 @@ router bgp 65103
       router-id 10.255.0.8
       neighbor 10.255.1.104 peer group MLAG-IPv4-UNDERLAY-PEER
       neighbor 10.255.1.104 description dc1-border-leaf1a_Vlan3009
+      neighbor 10.255.251.2 remote-as 65500
+      neighbor 10.255.251.2 description mills-avd-fw_VRF10
+      neighbor 10.255.251.2 send-community
+      neighbor 10.255.251.2 maximum-routes 0
       redistribute connected route-map RM-CONN-2-BGP-VRFS
+      !
+      address-family ipv4
+         neighbor 10.255.251.2 activate
    !
    vrf VRF11
       rd 10.255.0.8:11
@@ -849,7 +918,14 @@ router bgp 65103
       router-id 10.255.0.8
       neighbor 10.255.1.104 peer group MLAG-IPv4-UNDERLAY-PEER
       neighbor 10.255.1.104 description dc1-border-leaf1a_Vlan3010
+      neighbor 10.255.252.2 remote-as 65500
+      neighbor 10.255.252.2 description mills-avd-fw_VRF11
+      neighbor 10.255.252.2 send-community
+      neighbor 10.255.252.2 maximum-routes 0
       redistribute connected route-map RM-CONN-2-BGP-VRFS
+      !
+      address-family ipv4
+         neighbor 10.255.252.2 activate
 ```
 
 ## BFD
