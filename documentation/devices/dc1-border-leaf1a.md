@@ -739,9 +739,7 @@ ASN Notation: asplain
 | 10.255.255.18 | 65100 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 172.100.100.1 | 65203 | default | - | Inherited from peer group IPv4-UNDERLAY-PEERS | Inherited from peer group IPv4-UNDERLAY-PEERS | - | - | - | - | - | - |
 | 10.255.1.105 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF10 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
-| 10.255.251.2 | 65500 | VRF10 | - | all | 0 (no limit) | - | - | - | - | - | - |
 | 10.255.1.105 | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | VRF11 | - | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | Inherited from peer group MLAG-IPv4-UNDERLAY-PEER | - | - | - | - | - | - |
-| 10.255.252.2 | 65500 | VRF11 | - | all | 0 (no limit) | - | - | - | - | - | - |
 
 #### Router BGP EVPN Address Family
 
@@ -910,15 +908,8 @@ router bgp 65103
       router-id 10.255.0.7
       neighbor 10.255.1.105 peer group MLAG-IPv4-UNDERLAY-PEER
       neighbor 10.255.1.105 description dc1-border-leaf1b_Vlan3009
-      neighbor 10.255.251.2 remote-as 65500
-      neighbor 10.255.251.2 description mills-avd-fw_VRF10
-      neighbor 10.255.251.2 send-community
-      neighbor 10.255.251.2 maximum-routes 0
       redistribute connected route-map RM-CONN-2-BGP-VRFS
       redistribute static
-      !
-      address-family ipv4
-         neighbor 10.255.251.2 activate
    !
    vrf VRF11
       rd 10.255.0.7:11
@@ -927,15 +918,8 @@ router bgp 65103
       router-id 10.255.0.7
       neighbor 10.255.1.105 peer group MLAG-IPv4-UNDERLAY-PEER
       neighbor 10.255.1.105 description dc1-border-leaf1b_Vlan3010
-      neighbor 10.255.252.2 remote-as 65500
-      neighbor 10.255.252.2 description mills-avd-fw_VRF11
-      neighbor 10.255.252.2 send-community
-      neighbor 10.255.252.2 maximum-routes 0
       redistribute connected route-map RM-CONN-2-BGP-VRFS
       redistribute static
-      !
-      address-family ipv4
-         neighbor 10.255.252.2 activate
 ```
 
 ## BFD
