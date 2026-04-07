@@ -295,3 +295,33 @@ echo 'cd ~/avd-projects/my-homelab' >> ~/.bashrc
 - **NTP Server:** 192.168.4.250
 - **Management Gateway:** 192.168.4.1
 - **Management Subnet:** 192.168.4.0/22
+
+## Utilities
+
+Helper scripts for lab management stored in the `utilities/` directory.
+
+| Script | Description |
+|--------|-------------|
+| `iterm2-profiles-script.py` | Generates iTerm2 Dynamic Profiles for all fabric devices |
+
+### iterm2-profiles-script.py
+
+Generates iTerm2 saved session profiles for all 20 fabric devices (DC1 + DC2). Profiles are written to iTerm2's Dynamic Profiles directory and are available immediately without restarting iTerm2.
+
+**Usage:**
+```bash
+python3 utilities/iterm2-profiles-script.py
+```
+
+**Features:**
+- One profile per device, color coded by role:
+  - 🔵 Dark blue = spines
+  - 🟢 Dark green = leaves
+  - 🟠 Dark orange = border leafs
+- Tagged by `DC1`, `DC2`, `spine`, `leaf`, `border` for easy filtering
+- Open individual devices or multiple at once via `iTerm2 → Profiles` (⌘+O)
+
+**Requirements:**
+- iTerm2 installed on macOS
+- Python 3.x (no additional packages required)
+- Network reachability to `192.168.4.0/22` management subnet
